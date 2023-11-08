@@ -17,7 +17,7 @@ class Controller extends GetxController {
     super.onInit();
   }
 
-  final RxList<Subscription> subscriptions = <Subscription>[].obs;
+  final RxList<Subscription> subscriptions  = <Subscription>[].obs;
   List<Slide> slides = [
     Slide(
         'title', 'https://www.slideteam.net/wp/wp-content/uploads/2020/03/Banner-20-1001x436.png'),
