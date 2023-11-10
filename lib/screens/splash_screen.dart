@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
       Preference.init().whenComplete(() {
         if (Preference.isLogin) {
           //Already Login
-          Get.offAll(() => HomeScreenWithBottomMenu());
+          Get.offAll(() => HomeScreen());
         } else {
           Get.offAll(() => LoginScreen());
         }

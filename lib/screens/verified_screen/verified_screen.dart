@@ -54,7 +54,7 @@ class VerifiedScreen extends StatelessWidget {
               Helper.spaceVertical(4.w),
               Spacer(),
               FloatingActionButton(
-                onPressed: () => Get.to(() => HomeScreenWithBottomMenu()),
+                onPressed: () => Get.to(() => HomeScreen()),
                 backgroundColor: Colors.black,
                 child: Icon(Icons.arrow_forward_rounded),
               ),

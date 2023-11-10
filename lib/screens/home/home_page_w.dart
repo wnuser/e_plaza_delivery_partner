@@ -1,160 +1,108 @@
-import 'package:e_plaza_delivery_partner/screens/splash_screen.dart';
-import 'package:e_plaza_delivery_partner/utils/const.dart';
+import 'package:e_plaza_delivery_partner/screens/home/orders_list.dart';
 import 'package:e_plaza_delivery_partner/utils/helper.dart';
 import 'package:e_plaza_delivery_partner/values/size_config.dart';
-import 'package:e_plaza_delivery_partner/values/theme_colors.dart';
-import 'package:e_plaza_delivery_partner/widgets/custom_bottom_nav_bar.dart';
-import 'package:expandable/expandable.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../values/dimen.dart';
-import '../../widgets/my_drawer.dart';
+import '../../values/theme_colors.dart';
 import '../../widgets/widgets.dart';
-import '../placeholder_screen.dart';
 import 'controller.dart';
-import 'home_app_bar.dart';
-import 'main_slider.dart';
 
-class HomeScreenWithBottomMenu extends StatefulWidget {
+class HomeScreen extends StatefulWidget {
+  HomeScreen({Key? key}) : super(key: key);
+
   @override
-  _HomeScreenWithBottomMenuState createState() => _HomeScreenWithBottomMenuState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenWithBottomMenuState extends State<HomeScreenWithBottomMenu> {
-  final PageController _pageController = PageController();
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+  late final TabController _tabController;
+  final Controller _controller = Get.put(Controller(), tag: 'HomeScreenController');
 
   @override
   void initState() {
     super.initState();
-    Helper.initAutoRefreshTimer();
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onWillPop,
-      child: Scaffold(
-        key: _scaffoldKey,
-        backgroundColor: ThemeColors.offWhite,
-        body: SafeArea(
-          child: PageView.builder(
-            controller: _pageController,
-            physics: new NeverScrollableScrollPhysics(),
-            onPageChanged: (i) {
-              CustomBottomNavBar.selectedMenu.value = i;
-            },
-            itemBuilder: (context, position) {
-              switch (position) {
-                case 0:
-                  return _HomeScreen(
-                    openDrawer: () {
-                      _scaffoldKey.currentState!.openDrawer();
-                    },
-                  );
-                case 1:
-                  return PlaceholderScreen(placeholder: 'Chat');
-                case 2:
-                  return PlaceholderScreen(placeholder: '1');
-                case 3:
-                  return PlaceholderScreen(placeholder: '2');
-                default:
-                  return SplashScreen();
-              }
-            },
-            itemCount: 4,
-          ),
-        ),
-        drawer: MyDrawer(),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          // onPressed: () => Get.to(() => ProductListingScreen()),
-          // onPressed: () => Get.to(() => ShopDetailsScreen()),
-          backgroundColor: ThemeColors.colorPrimary,
-          child: Icon(Icons.add, size: 24, color: Colors.white),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: CustomBottomNavBar(callback: (state) {
-          if (state >= 0) {
-            CustomBottomNavBar.selectedMenu.value = state;
-            _pageController.jumpToPage(state);
-          } else {
-            // Get.to(() => ProductListingScreen());
-          }
-        }),
-      ),
-    );
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
-
-  Future<bool> _onWillPop() async {
-    if (CustomBottomNavBar.selectedMenu.value != 0) {
-      setState(() {
-        CustomBottomNavBar.selectedMenu.value = 0;
-        _pageController.jumpToPage(CustomBottomNavBar.selectedMenu.value);
-      });
-    } else {
-      Helper.exitAlert();
-    }
-    return false;
-  }
-}
-
-////////////////////////////////////////////////////////////
-
-class _HomeScreen extends StatelessWidget {
-  final void Function() openDrawer;
-
-  _HomeScreen({required this.openDrawer, Key? key}) : super(key: key);
-
-  // final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  final Controller _controller = Get.put(Controller(), tag: 'HomeScreenController');
 
   final double spacing = 16;
 
   // int _initialColorIndex = -1;
-  //
-  // final List<Pair<Color, Color>> _colors = [
-  //   Pair(Color.fromRGBO(251, 118, 147, 0.1), Color.fromRGBO(250, 90, 125, 1.0)),
-  //   Pair(Color.fromRGBO(84, 246, 151, 0.1), Color.fromRGBO(0, 200, 83, 1.0)),
-  //   Pair(Color.fromRGBO(52, 202, 202, 0.1), Color.fromRGBO(26, 176, 176, 1)),
-  //   Pair(Color.fromRGBO(255, 137, 96, 0.1), Color.fromRGBO(255, 137, 96, 1)),
-  //   Pair(Color.fromRGBO(241, 143, 143, 0.1), Color.fromRGBO(252, 29, 29, 1.0)),
-  //   Pair(Color.fromRGBO(241, 189, 144, 0.1), Color.fromRGBO(245, 127, 23, 1.0)),
-  //   Pair(Color.fromRGBO(120, 200, 239, 0.1), Color.fromRGBO(3, 155, 229, 1.0)),
-  //   Pair(Color.fromRGBO(157, 144, 255, 0.1), Color.fromRGBO(134, 118, 254, 1)),
-  //   // Pair(Color.fromRGBO(232, 158, 136, 0.1), Color.fromRGBO(216, 67, 21, 1.0)),
-  //   //Pair(Color.fromRGBO(47, 37, 92, 0.1), Color.fromRGBO(52, 53, 118, 0.7)),
-  // ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // key: _scaffoldKey,
-      backgroundColor: Colors.grey.shade200,
-      body: SafeArea(
-        child: Column(mainAxisSize: MainAxisSize.max, children: [
-          HomeAppBar(onMenuClick: openDrawer),
-          Expanded(
-            child: ListView(
-              shrinkWrap: true,
-              padding: EdgeInsets.only(bottom: 40),
-              children: [
-
-              ],
-            ),
-          ),
-        ]),
-      ),
-      // drawer: MyDrawer(),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () => Get.to(() => ProductListingScreen()),
-      //   backgroundColor: ThemeColors.colorPrimary,
-      //   child: Icon(Icons.add, size: 24, color: Colors.white),
+      backgroundColor: ThemeColors.white,
+      // body: SafeArea(
+      //   child: Column(mainAxisSize: MainAxisSize.max, children: [
+      //     HomeAppBar(onMenuClick: () {}),
+      //     Helper.spaceVertical(12),
+      //     _grid(
+      //       [
+      //         _cardItem('20', 'New Orders', 'assets/icons/active_services.png', () {}),
+      //         _cardItem('20', 'Completed orders', 'assets/icons/inactive_services.png', () {}),
+      //         // _cardItem('2', 'Payments', 'assets/icons/payments.png', () {}),
+      //         // _cardItem('2', 'Customers', 'assets/icons/customers.png', () {}),
+      //       ],
+      //     ),
+      //   ]),
       // ),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      // bottomNavigationBar: CustomBottomNavBar(selectedMenu: MenuState.home),
+      appBar: AppBar(
+        title: const Text(
+          'E Plaza Deliver Partner',
+          style: MyTextStyle(
+            fontSize: 18,
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        leading: smallIcon(
+          Icons.menu,
+          () {},
+          iconSize: 24,
+          imageColor: Colors.white,
+        ),
+        leadingWidth: 50,
+        actions: [
+          smallIcon(CupertinoIcons.bell_fill, () {}, iconSize: 18, imageColor: Colors.white),
+          Helper.spaceHorizontal(12)
+        ],
+        bottom: TabBar(
+          controller: _tabController,
+          dividerColor: Colors.white,
+          indicatorColor: Colors.white,
+          indicatorSize: TabBarIndicatorSize.label,
+          dragStartBehavior: DragStartBehavior.start,
+          tabs: ['New Orders', 'Completed', 'Canceled'].map((e) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Text(e,
+                  style: MyTextStyle(
+                    color: Colors.white,
+                    fontSize: fontSizeMedium,
+                    fontWeight: FontWeight.w600,
+                  )),
+            );
+          }).toList(),
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: <Widget>[
+          OrderList(orders: _controller.orders, type: 'NEW'),
+          OrderList(orders: _controller.orders.reversed.toList(), type: 'COMPLETED'),
+          OrderList(orders: _controller.orders.take(15).toList().reversed.toList(), type: 'CANCELED'),
+        ],
+      ),
     );
   }
 
@@ -227,5 +175,17 @@ class _HomeScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _grid(List<Widget> list) {
+    return GridView.count(
+        shrinkWrap: true,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        padding: EdgeInsets.symmetric(horizontal: spacing),
+        crossAxisCount: 2,
+        childAspectRatio: 2 / 1,
+        physics: NeverScrollableScrollPhysics(),
+        children: list);
   }
 }
