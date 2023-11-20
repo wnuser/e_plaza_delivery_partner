@@ -559,3 +559,13 @@ Widget cancelButton(String txt, void Function() callback) {
     ),
   );
 }
+
+
+Widget label(String label, {Color? color}) => Padding(
+  padding: const EdgeInsets.symmetric(vertical: 6),
+  child: Text(label,
+      style: MyTextStyle(
+        color: color ?? Colors.grey.shade700,
+        fontSize: fontSizeSmall,
+      )),
+);

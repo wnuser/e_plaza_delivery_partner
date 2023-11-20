@@ -85,3 +85,11 @@ class PlanType {
   static const String Quarterly = 'Quarterly';
   static const String Yearly = 'Yearly';
 }
+
+class OrderStatus {
+  static const String ALL = 'ALL';
+  static const String PENDING = 'PENDING';
+  static const String ASSIGNED = 'ASSIGNED';
+  static const String DELIVERED = 'DELIVERED';
+  static const String CANCELED = 'CANCELED';
+}

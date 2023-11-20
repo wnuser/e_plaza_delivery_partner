@@ -1,12 +1,15 @@
 import 'dart:async';
 
-import 'package:dio/dio.dart';
+import 'package:e_plaza_delivery_partner/modals/category.dart';
+import 'package:e_plaza_delivery_partner/modals/order_details.dart';
+import 'package:e_plaza_delivery_partner/modals/product_details.dart';
+import 'package:e_plaza_delivery_partner/modals/sub_category.dart';
+import 'package:e_plaza_delivery_partner/modals/user.dart';
+import 'package:e_plaza_delivery_partner/modals/user_address.dart';
 import 'package:e_plaza_delivery_partner/utils/const.dart';
-import 'package:e_plaza_delivery_partner/utils/helper.dart';
-import 'package:e_plaza_delivery_partner/utils/preference.dart';
 
 import '../modals/config.dart';
-import '../modals/result.dart';
+import '../modals/delivery_time.dart';
 import 'api_provider.dart';
 
 class Repository {
@@ -48,5 +51,63 @@ class Repository {
 
   Future<dynamic> verifyOtp(String userId, String otp) {
     return ApiProvider('check/otp', parameters: {'user_id': userId, 'otp': otp}).getDynamic();
+  }
+
+  Future<OrderDetails> getOrderDetails(String orderId) async {
+    return OrderDetails.test(
+        '0',
+        '123456',
+        '444444444444',
+        '55555555',
+        '2023-11-14 12:12:12',
+        '2023-11-14 12:12:12',
+        '1',
+        '200',
+        'PENDING',
+        'PENDING',
+        'COD',
+        '',
+        '',
+        '',
+        '1',
+        '',
+        '2023-11-14 12:12:12',
+        '2023-11-14 12:12:12',
+        '2023-11-14 12:12:12',
+        '2023-11-14 12:12:12',
+        ProductDetails.test(
+            '',
+            '1',
+            '2',
+            '1',
+            'Manish',
+            '300',
+            '200',
+            '2',
+            'Nice Product',
+            '',
+            '',
+            '1',
+            '1',
+            '1',
+            'https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/a/6/2/g54-5g-payw0005in-motorola-original-imagt3mekfgqkyk8.jpeg?q=70',
+            '',
+            '',
+            '2023-11-14 12:12:12',
+            '2023-11-14 12:12:12',
+            Category(),
+            SubCategory(),
+            DeliveryTime()),
+        User.fromJson({'name': 'Manish User'}),
+        UserAddress.test(
+            address: 'Ghantaghar Dehradun, Uttarakhand',
+            addressType: "Home",
+            roadNameAreaColony: "Roadname city",
+            phoneNo: '1234567890',
+            landmark: 'Tes Landmark',
+            success: true,
+            city: 'Dehradun',
+            state: 'Uttarakhand',
+            pinCode: '123456'));
   }
 }

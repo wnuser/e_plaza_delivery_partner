@@ -1,4 +1,4 @@
-import 'package:e_plaza_delivery_partner/screens/home/home_page_w.dart';
+import 'package:e_plaza_delivery_partner/screens/dashboard/dashboard_screen.dart';
 import 'package:e_plaza_delivery_partner/screens/login/login.dart';
 import 'package:e_plaza_delivery_partner/values/size_config.dart';
 import 'package:e_plaza_delivery_partner/widgets/widgets.dart';
@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
       Preference.init().whenComplete(() {
         if (Preference.isLogin) {
           //Already Login
-          Get.offAll(() => HomeScreen());
+          Get.offAll(() => DashboardScreen());
         } else {
           Get.offAll(() => LoginScreen());
         }

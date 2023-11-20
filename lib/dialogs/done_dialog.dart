@@ -61,7 +61,7 @@ class DoneDialog {
                       icon,
                       width: 16.w,
                       height: 16.w,
-                      color: color,
+                      // color: color,
                     ),
                   ),
                   Helper.spaceVertical(5.h),
@@ -85,15 +85,15 @@ class DoneDialog {
                   Helper.spaceVertical(50),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: _horizontalPadding),
-                    child: TextButton(
+                    child: OutlinedButton(
                       onPressed: callback,
-                      style: TextButton.styleFrom(
-                          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 25),
-                          backgroundColor: ThemeColors.colorPrimary,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
+                      style: OutlinedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                        minimumSize: Size.zero,
+                      ),
                       child: Text(
                         buttonText,
-                        style: MyTextStyle(color: Colors.white),
+                        style: MyTextStyle(fontSize: fontSizeSmall),
                       ),
                     ),
                   ),

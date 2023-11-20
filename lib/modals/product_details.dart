@@ -30,6 +30,31 @@ class ProductDetails {
 
   ProductDetails();
 
+
+  ProductDetails.test(
+      this.id,
+      this.categoryId,
+      this.subCategoryId,
+      this.vendorId,
+      this.name,
+      this.price,
+      this.offerPrice,
+      this.stockQuantity,
+      this.description,
+      this.shippingPolicy,
+      this.refundPolicy,
+      this.isCancelEnabled,
+      this.isReturnEnabled,
+      this.isExchangeEnabled,
+      this.image1,
+      this.image2,
+      this.image3,
+      this.createdAt,
+      this.updatedAt,
+      this.category,
+      this.subCategory,
+      this.globalDeliveryTime);
+
   ProductDetails.fromJson(dynamic json) {
     id = json['id'].toString();
     categoryId = json['category_id'].toString();

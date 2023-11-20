@@ -1,5 +1,6 @@
 import 'package:e_plaza_delivery_partner/data_provider/repository.dart';
 import 'package:e_plaza_delivery_partner/modals/user.dart';
+import 'package:e_plaza_delivery_partner/screens/dashboard/dashboard_screen.dart';
 import 'package:e_plaza_delivery_partner/utils/const.dart';
 import 'package:e_plaza_delivery_partner/utils/helper.dart';
 import 'package:e_plaza_delivery_partner/utils/toasty.dart';
@@ -7,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../utils/preference.dart';
-import '../home/home_page_w.dart';
 
 class Controller extends GetxController {
   final RxString status = Status.NORMAL.obs;
@@ -44,7 +44,7 @@ class Controller extends GetxController {
         Preference.setUser(user);
         Preference.token = response['token'];
         Toasty.success(response['message'].toString().placeholder('somethingWentWrong'.t));
-        Get.offAll(() => HomeScreen());
+        Get.offAll(() => DashboardScreen());
       } else {
         Toasty.failed(response['message'].toString().placeholder('somethingWentWrong'.tr));
       }

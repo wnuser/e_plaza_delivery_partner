@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../values/theme_colors.dart';
 import '../../widgets/widgets.dart';
 
+
 class HomeAppBar extends StatelessWidget {
   final Function() onMenuClick;
   HomeAppBar({required this.onMenuClick, Key? key}) : super(key: key);
