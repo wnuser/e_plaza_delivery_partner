@@ -2,10 +2,12 @@ import 'package:e_plaza_delivery_partner/dialogs/cancel_reason_dialog.dart';
 import 'package:e_plaza_delivery_partner/utils/helper.dart';
 import 'package:e_plaza_delivery_partner/values/dimen.dart';
 import 'package:e_plaza_delivery_partner/widgets/widgets.dart';
+import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../modals/order.dart';
 import '../../utils/toasty.dart';
@@ -14,8 +16,10 @@ class OrderWidget extends StatelessWidget {
   final String status;
   final Order order;
   final void Function(Order order)? deliver;
+  ExpandableController expandableController = ExpandableController();
 
-  OrderWidget({required this.order, Key? key, required this.status, this.deliver}) : super(key: key);
+  OrderWidget({required this.order, Key? key, required this.status, this.deliver})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -61,34 +65,81 @@ class OrderWidget extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    _tile('Deliver to : <span style="font-weight:500">Manish Kumar</span>'),
                     _tile('Assigned <b>2</b> Packages From Xyz Shop'),
-                    _tile('Deliver to \'Ghantaghar dehradun\''),
+                    // _tile('Deliver to \'Ghantaghar dehradun\''),
                     _tile('Payment : COD ⟨Paid⟩'),
-                    _tile(
-                        'Deliver to : Manish (<a href="tel:1234567890" style="text-decoration:none"><b>1234567890</b></a>)'),
                     _tile('Delivery Time :<b>18 Nov, 6:30 PM</b>'),
                   ],
                 ),
               ),
-              TextButton(
-                onPressed: () {
-                  String query = Uri.encodeComponent('Chukkuwala Dehradun, Uttarakhand 248001');
-                  String googleUrl = "https://www.google.com/maps/search/?api=1&query=$query";
-                  // googleUrl.openAsUrl;
-                  Helper.openUrl(googleUrl, onError: (s) {
-                    Toasty.failed("Can't open location!");
-                  });
-                },
-                style: TextButton.styleFrom(
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  shape: CircleBorder(),
-                  visualDensity: VisualDensity.compact,
-                  minimumSize: Size.zero,
-                  padding: EdgeInsets.all(12),
-                ),
-                child: Icon(CupertinoIcons.location),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Helper.openUrl('tel:+911234567890',
+                          launchMode: LaunchMode.externalNonBrowserApplication);
+                    },
+                    style: TextButton.styleFrom(
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      shape: CircleBorder(),
+                      visualDensity: VisualDensity.compact,
+                      minimumSize: Size.zero,
+                      padding: EdgeInsets.all(12),
+                    ),
+                    child: Icon(CupertinoIcons.phone),
+                  ),
+                  Helper.spaceVertical(6),
+                  TextButton(
+                    onPressed: () {
+                      String query = Uri.encodeComponent('Chukkuwala Dehradun, Uttarakhand 248001');
+                      String googleUrl = "https://www.google.com/maps/search/?api=1&query=$query";
+                      // googleUrl.openAsUrl;
+                      Helper.openUrl(googleUrl, onError: (s) {
+                        Toasty.failed("Can't open location!");
+                      });
+                    },
+                    style: TextButton.styleFrom(
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      shape: CircleBorder(),
+                      visualDensity: VisualDensity.compact,
+                      minimumSize: Size.zero,
+                      padding: EdgeInsets.all(12),
+                    ),
+                    child: Icon(CupertinoIcons.location),
+                  ),
+                ],
               ),
             ],
+          ),
+          Helper.spaceVertical(8),
+          ExpandablePanel(
+            controller: expandableController,
+            header: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'View More',
+                  style: MyTextStyle(
+                      fontWeight: FontWeight.w600, color: Colors.blue, fontSize: fontSizeLarge),
+                ),
+                Icon(Icons.arrow_drop_down, color: Colors.blue),
+              ],
+            ),
+            collapsed: empty(),
+            theme: ExpandableThemeData(hasIcon: false),
+            expanded: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Html(data: '<span style="font-weight:500">Manish Kumar</span>', style: {"body": Style(margin: Margins.all(2))}),
+                Html(data: '35, Gandhi Rd', style: {"body": Style(margin: Margins.all(2))}),
+                Html(data: 'Dhamawala Mohalla, Paltan Bazaar, Dehradun', style: {"body": Style(margin: Margins.all(2))}),
+                Html(data: 'Dehradun, Uttarakhand - 248001', style: {"body": Style(margin: Margins.all(2))}),
+                Html(data: 'Phone Number: 1234567890,0987654321', style: {"body": Style(margin: Margins.all(2))}),
+                Html(data: 'Note : Beaver of dog! Enter in our area on your own risk!', style: {"body": Style(margin: Margins.all(2))}),
+              ],
+            ),
           ),
           Helper.spaceVertical(8),
           Row(
@@ -203,8 +254,9 @@ class OrderWidget extends StatelessWidget {
           Expanded(
             child: Html(
               data: text, shrinkWrap: true,
-              style: {
-                "body": Style(margin: Margins.all(0)),
+              style: {"body": Style(margin: Margins.all(0))},
+              onLinkTap: (_, __, ___) {
+                Helper.openUrl(_.nullSafe, launchMode: LaunchMode.externalNonBrowserApplication);
               },
               // , style: MyTextStyle(fontSize: fontSize, fontWeight: fontWeight),
             ),
@@ -229,10 +281,12 @@ class OrderWidget extends StatelessWidget {
 
   IconData get statusIcon {
     switch (status) {
-      case 'DELIVERED':
-        return CupertinoIcons.check_mark_circled_solid;
+      case 'NEW':
+        return Icons.new_releases;
       case 'PENDING':
         return CupertinoIcons.time;
+      case 'DELIVERED':
+        return CupertinoIcons.check_mark_circled_solid;
       case 'CANCELED':
         return Icons.error_outline_rounded;
     }

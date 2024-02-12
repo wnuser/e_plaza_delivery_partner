@@ -1,8 +1,8 @@
-import 'package:get/get.dart';
 import 'package:e_plaza_delivery_partner/utils/const.dart';
+import 'package:get/get.dart';
 
-class Controller extends GetxController{
-  RxString status = Status.PROGRESS.obs;
+class Controller extends GetxController {
+  RxString status = Status.NORMAL.obs;
 
   Controller();
 
@@ -13,8 +13,5 @@ class Controller extends GetxController{
   }
 
   void init() {
-
   }
-
-
 }

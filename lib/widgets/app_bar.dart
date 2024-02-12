@@ -54,7 +54,7 @@ class _MyAppBarState extends State<MyAppBar> {
     widget.searchController = widget.searchController ?? TextEditingController();
     return Container(
       width: MediaQuery.of(context).size.width,
-      height: 55,
+      height: 60,
       decoration: const BoxDecoration(color: ThemeColors.colorPrimary),
       child: widget.searchExpanded
           ? _searchBar

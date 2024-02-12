@@ -38,6 +38,7 @@ class Controller extends GetxController {
       status.value = Status.PROGRESS;
       var response = await Repository.instance.login(emailController.text, passwordController.text);
 
+
       if (response['success']) {
         User user = User.fromJson(response['data']);
         Preference.setLogin(true);

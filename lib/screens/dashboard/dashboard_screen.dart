@@ -1,5 +1,6 @@
 import 'package:e_plaza_delivery_partner/screens/dashboard/home_app_bar.dart';
 import 'package:e_plaza_delivery_partner/screens/orders/orders_screen.dart';
+import 'package:e_plaza_delivery_partner/screens/profile/profile.dart';
 import 'package:e_plaza_delivery_partner/values/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -27,59 +28,64 @@ class DashboardScreen extends StatelessWidget {
         child: Column(
           children: [
             HomeAppBar(onMenuClick: () {}),
-            Helper.spaceVertical(3.h),
             Expanded(
               child: ListView(
                 shrinkWrap: true,
                 physics: BouncingScrollPhysics(),
                 children: [
-                  Container(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(50),
-                            child: /* Preference.user.profilePic == Status.PROGRESS
-                              ? const CircularProgressIndicator(strokeWidth: 3)
-                              :*/
-                                MyNetworkImage(
-                              path:
-                                  'https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg',
-                              // imageName: Const.profilePic.value,
-                              width: imgSize,
-                              height: imgSize,
-                              open: true,
-                              errorWidget: assetImage(
-                                  'assets/icons/profile_placeholder_primary.png',
-                                  width: imgSize,
-                                  height: imgSize,
-                                  color: ThemeColors.white,
-                                  fit: BoxFit.contain),
-                            ),
-                          ),
-                          Helper.spaceHorizontal(20),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Delivery Boy',
-                                style: const MyTextStyle(
-                                    color: Colors.black,
-                                    fontSize: fontSizeExtraLarge,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                              Text(
-                                'delivery@gmail.com',
-                                style: MyTextStyle(color: Colors.black, fontSize: fontSizeSmall),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                      alignment: Alignment.center),
                   Helper.spaceVertical(3.h),
+                  GestureDetector(
+                    onTap: () => Get.to(() => ProfileScreen()),
+                    child: Container(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(50),
+                              child: /* Preference.user.profilePic == Status.PROGRESS
+                                ? const CircularProgressIndicator(strokeWidth: 3)
+                                :*/
+                                  MyNetworkImage(
+                                path:
+                                    'https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg',
+                                // imageName: Const.profilePic.value,
+                                width: imgSize,
+                                height: imgSize,
+                                errorWidget: assetImage(
+                                    'assets/icons/profile_placeholder_primary.png',
+                                    width: imgSize,
+                                    height: imgSize,
+                                    color: ThemeColors.white,
+                                    fit: BoxFit.contain),
+                              ),
+                            ),
+                            Helper.spaceHorizontal(20),
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Delivery Boy',
+                                  style: const MyTextStyle(
+                                      color: Colors.black,
+                                      fontSize: fontSizeExtraLarge,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                Text(
+                                  'delivery@gmail.com',
+                                  style: MyTextStyle(color: Colors.black, fontSize: fontSizeSmall),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                        alignment: Alignment.center),
+                  ),
+                  Helper.spaceVertical(3.h),
+                  _earningCard(),
+                  Helper.spaceVertical(0.7.h),
+                  // Helper.spaceVertical(3.h),
                   _grid(),
                   // Helper.spaceVertical(1.h),
                   Padding(
@@ -104,9 +110,7 @@ class DashboardScreen extends StatelessWidget {
                         ),
                         Spacer(),
                         TextButton(
-                          onPressed: () {
-                            Get.to(() => OrdersScreen('PENDING'));
-                          },
+                          onPressed: () => Get.to(() => OrdersScreen('NEW')),
                           style: TextButton.styleFrom(
                               minimumSize: Size.zero,
                               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -250,4 +254,70 @@ class DashboardScreen extends StatelessWidget {
           offset: Offset(0, 0.4),
         )
       ];
+
+  Widget _earningCard() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 2,
+            blurRadius: 2,
+            offset: Offset(0, 0.4),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Total Earnings',
+                  style: MyTextStyle(
+                    fontSize: fontSizeSmall,
+                    color: ThemeColors.defaultTextColor.withOpacity(0.7),
+                  ),
+                ),
+                Helper.spaceVertical(2),
+                Text(
+                  'November 2023',
+                  style: MyTextStyle(
+                    fontSize: fontSizeLarge,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '₹40,000/-',
+                style: MyTextStyle(
+                  fontSize: fontSizeExtraLarge,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Helper.spaceVertical(2),
+              Text(
+                '+ ₹2,000 Incentive',
+                style: MyTextStyle(
+                  fontSize: fontSizeMini,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }
