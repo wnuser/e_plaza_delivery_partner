@@ -87,9 +87,32 @@ class PlanType {
 }
 
 class OrderStatus {
-  static const String ALL = 'ALL';
-  static const String PENDING = 'PENDING';
-  static const String ASSIGNED = 'ASSIGNED';
-  static const String DELIVERED = 'DELIVERED';
-  static const String CANCELED = 'CANCELED';
+  static const int NEW = 0;
+  static const int ACCEPTED = 1;
+  static const int VENDOR_CANCELED = 2;
+  static const int USER_CANCELED = 3;
+  static const int DELIVERY_PARTNER_ASSIGNED = 4;
+  static const int PICKED = 5;
+  static const int DELIVERED = 6;
+
+  static String orderStatus(num? orderStatus) {
+    switch (orderStatus) {
+      case OrderStatus.NEW:
+        return "New Order";
+      case OrderStatus.ACCEPTED:
+        return "Accepted";
+      case OrderStatus.VENDOR_CANCELED:
+        return "Vendor Canceled";
+      case OrderStatus.USER_CANCELED:
+        return "User Canceled";
+      case OrderStatus.DELIVERY_PARTNER_ASSIGNED:
+        return "Delivery Partner Assigned";
+      case OrderStatus.PICKED:
+        return "Picked";
+      case OrderStatus.DELIVERED:
+        return "Delivered";
+    }
+
+    return '';
+  }
 }

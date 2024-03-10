@@ -1,23 +1,32 @@
 import 'package:e_plaza_delivery_partner/dialogs/deliver_order_dialog.dart';
-import 'package:e_plaza_delivery_partner/dialogs/done_dialog.dart';
-import 'package:e_plaza_delivery_partner/modals/order.dart';
 import 'package:e_plaza_delivery_partner/screens/orders/orders_list.dart';
 import 'package:e_plaza_delivery_partner/utils/helper.dart';
 import 'package:e_plaza_delivery_partner/values/theme_colors.dart';
 import 'package:e_plaza_delivery_partner/widgets/app_bar.dart';
-import 'package:e_plaza_delivery_partner/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../utils/const.dart';
+import '../../widgets/widgets.dart';
 import 'controller.dart';
 
-class OrdersScreen extends StatelessWidget {
-  final String status;
+class OrdersScreen extends StatefulWidget {
+  final int orderStatus;
 
-  OrdersScreen(this.status, {Key? key}) : super(key: key);
+  OrdersScreen(this.orderStatus, {Key? key}) : super(key: key);
 
+  @override
+  State<OrdersScreen> createState() => _OrdersScreenState();
+}
+
+class _OrdersScreenState extends State<OrdersScreen> {
   final Controller _controller = Get.put(Controller(), tag: 'OrdersScreenController');
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.getOrders(widget.orderStatus);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,33 +34,32 @@ class OrdersScreen extends StatelessWidget {
       backgroundColor: ThemeColors.whiteBlue,
       body: SafeArea(
         child: Column(mainAxisSize: MainAxisSize.max, children: [
-          MyAppBar((status.inCaps) + ' Orders', enableSearch: true),
+          MyAppBar((OrderStatus.orderStatus(widget.orderStatus)) + ' Orders', enableSearch: true),
           Helper.spaceVertical(12),
-          Expanded(
-              child: Stack(
-            children: [
-              OrderList(
-                status: status,
-                orders: List.generate(10, (index) => Order()),
+          Expanded(child: Obx(
+            () {
+              if (_controller.status.value == Status.PROGRESS) {
+                return progressLayout();
+              }
+
+              if (_controller.newOrdersList.isEmpty) {
+                return emptyLayout();
+              }
+
+              return OrderList(
+                orderStatus: widget.orderStatus,
+                orders: _controller.newOrdersList,
                 deliver: (order) {
-                  DeliverOrderDialog(onDeliver: () {
-                    Get.back();
-                    _controller.status.value = Status.PROGRESS;
-                    Future.delayed(Duration(seconds: 2), () {
-                      _controller.status.value = Status.NORMAL;
-                      DoneDialog(
-                        title: 'Order Delivered',
-                        message: "User identity verified successfully.",
-                        buttonText: 'Back',
-                        icon: 'assets/icons/checked_icon_round.png',
-                        callback: Get.back,
-                      );
-                    });
-                  });
+                  VerifyOtpDialog(
+                      orderId: order.id,
+                      onDeliver: () {
+                        Get.back();
+                        _controller.order = order;
+                        // _controller.sendOtp();
+                      });
                 },
-              ),
-              Obx(() => _controller.status.value == Status.PROGRESS ? progressLayout() : empty()),
-            ],
+              );
+            },
           ))
         ]),
       ),

@@ -10,15 +10,20 @@ import 'package:otp_text_field/otp_field.dart';
 import 'package:otp_text_field/otp_field_style.dart';
 import 'package:otp_text_field/style.dart';
 
+import '../data_provider/repository.dart';
+import '../modals/result.dart';
 import '../utils/const.dart';
+import '../utils/preference.dart';
 
-class DeliverOrderDialog {
+class VerifyOtpDialog {
   final void Function() onDeliver;
+  num? orderId;
   String sentOtp = '1234';
   String enteredOtp = '';
   String sentStatus = Status.PROGRESS;
 
-  DeliverOrderDialog({
+  VerifyOtpDialog({
+    required this.orderId,
     required this.onDeliver,
   }) {
     _show();
@@ -30,15 +35,9 @@ class DeliverOrderDialog {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: StatefulBuilder(
           builder: (context, setState) {
-            if(sentStatus == Status.PROGRESS) {
-              Future.delayed(Duration(seconds: 2), () {
-                sentStatus = Status.NORMAL;
-                Toasty.success('Otp sent');
-                setState(() {});
-              });
-            }
+            sendOtp(setState);
             return Container(
-              width: 60.w,
+              // width: 60.w,
               decoration: Helper.dialogBoxDecoration,
               padding: EdgeInsets.only(bottom: 20),
               child: ListView(
@@ -80,7 +79,7 @@ class DeliverOrderDialog {
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      '+911234567890',
+                      'Buyer Number',
                       style: MyTextStyle(
                           fontSize: fontSizeMedium,
                           color: Colors.black87,
@@ -90,9 +89,9 @@ class DeliverOrderDialog {
                     Helper.spaceVertical(20),
                     Center(
                       child: OTPTextField(
-                        length: 4,
-                        width: 50.w,
-                        fieldWidth: 10.w,
+                        length: 6,
+                        width: 60.w,
+                        fieldWidth: 8.w,
                         spaceBetween: 0,
                         style: const MyTextStyle(
                           fontSize: fontSizeSmall,
@@ -118,11 +117,6 @@ class DeliverOrderDialog {
                         child: Text(
                       'Please wait...',
                       style: MyTextStyle(),
-                    )),
-                    Center(
-                        child: Text(
-                      'Sending OTP',
-                      style: MyTextStyle(fontSize: fontSizeSmall),
                     )),
                     Helper.spaceVertical(20),
                     Center(
@@ -153,8 +147,26 @@ class DeliverOrderDialog {
     );
   }
 
-  void verify() {
-    if (enteredOtp == '1234') {
+  void sendOtp(setState) async {
+    // sentStatus = Status.NORMAL;
+    // return;
+
+    if (sentStatus == Status.PROGRESS) {
+      Result result = await Repository.instance.requestOtp(Preference.user.id.toString(), orderId);
+
+      if (result.success) {
+        sentStatus = Status.NORMAL;
+        Toasty.success('Otp sent');
+        setState(() {});
+      }
+    }
+  }
+
+  void verify() async {
+    Result result =
+        await Repository.instance.checkOtp(Preference.user.id.toString(), orderId, enteredOtp);
+
+    if (result.success) {
       onDeliver.call();
     } else {
       Toasty.failed('Please enter valid OTP!');

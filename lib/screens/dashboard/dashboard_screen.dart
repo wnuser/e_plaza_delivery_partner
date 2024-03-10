@@ -1,11 +1,12 @@
 import 'package:e_plaza_delivery_partner/screens/dashboard/home_app_bar.dart';
 import 'package:e_plaza_delivery_partner/screens/orders/orders_screen.dart';
 import 'package:e_plaza_delivery_partner/screens/profile/profile.dart';
+import 'package:e_plaza_delivery_partner/utils/preference.dart';
 import 'package:e_plaza_delivery_partner/values/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../modals/order.dart';
+import '../../utils/const.dart';
 import '../../utils/helper.dart';
 import '../../values/dimen.dart';
 import '../../values/theme_colors.dart';
@@ -68,13 +69,17 @@ class DashboardScreen extends StatelessWidget {
                                 Text(
                                   'Delivery Boy',
                                   style: const MyTextStyle(
-                                      color: Colors.black,
-                                      fontSize: fontSizeExtraLarge,
-                                      fontWeight: FontWeight.w600),
+                                    color: Colors.black,
+                                    fontSize: fontSizeExtraLarge,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                                 Text(
-                                  'delivery@gmail.com',
-                                  style: MyTextStyle(color: Colors.black, fontSize: fontSizeSmall),
+                                  Preference.user.email.nullSafe,
+                                  style: MyTextStyle(
+                                    color: Colors.black,
+                                    fontSize: fontSizeSmall,
+                                  ),
                                 ),
                               ],
                             )
@@ -101,16 +106,18 @@ class DashboardScreen extends StatelessWidget {
                               fontSize: fontSizeLarge,
                               fontWeight: FontWeight.bold),
                         ),
-                        Text(
-                          ' (10)',
-                          style: MyTextStyle(
-                              color: Colors.black,
-                              fontSize: fontSizeLarge,
-                              fontWeight: FontWeight.bold),
+                        Obx(
+                          () => Text(
+                            ' (${_controller.newOrdersList.length})',
+                            style: MyTextStyle(
+                                color: Colors.black,
+                                fontSize: fontSizeLarge,
+                                fontWeight: FontWeight.bold),
+                          ),
                         ),
                         Spacer(),
                         TextButton(
-                          onPressed: () => Get.to(() => OrdersScreen('NEW')),
+                          onPressed: () => Get.to(() => OrdersScreen(OrderStatus.NEW)),
                           style: TextButton.styleFrom(
                               minimumSize: Size.zero,
                               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -151,9 +158,14 @@ class DashboardScreen extends StatelessWidget {
                   //     ),
                   //   );
                   // }),
-                  OrderList(
-                    status: 'NEW',
-                    orders: List.generate(10, (index) => Order()),
+                  Obx(
+                    () {
+                      _controller.newOrdersList.length;
+                      return OrderList(
+                        orderStatus: OrderStatus.NEW,
+                        orders: _controller.newOrdersList,
+                      );
+                    },
                   )
                 ],
               ),
@@ -174,17 +186,18 @@ class DashboardScreen extends StatelessWidget {
       childAspectRatio: 5 / 3,
       physics: const NeverScrollableScrollPhysics(),
       children: [
-        _cardItem('10', 'Delivered\nOrders', 'assets/icons/completed_list.png', () {
-          Get.to(() => OrdersScreen('DELIVERED'));
-        }),
-        _cardItem('10', 'Canceled\nOrders', 'assets/icons/canceled_list.png', () {
-          Get.to(() => OrdersScreen('CANCELED'));
-        }),
-        _cardItem('10', 'Pending\nOrders', 'assets/icons/pending_orders.png', () {
-          Get.to(() => OrdersScreen('PENDING'));
-        }),
-        _cardItem('Log Out', '', 'assets/icons/logout_outline.png', Helper.logOut,
-            titleSize: 15, iconSize: 34),
+        Obx(
+          () => _cardItem(_controller.completedOrders.value.toString(), 'Delivered\nOrders',
+              'assets/icons/completed_list.png', () {
+            Get.to(() => OrdersScreen(OrderStatus.DELIVERED));
+          }),
+        ),
+        Obx(
+          () => _cardItem(_controller.newOrders.value.toString(), 'New\nOrders',
+              'assets/icons/pending_orders.png', () {
+            Get.to(() => OrdersScreen(OrderStatus.NEW));
+          }),
+        ),
       ],
     );
   }

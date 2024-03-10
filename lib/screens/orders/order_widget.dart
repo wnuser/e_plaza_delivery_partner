@@ -1,4 +1,5 @@
 import 'package:e_plaza_delivery_partner/dialogs/cancel_reason_dialog.dart';
+import 'package:e_plaza_delivery_partner/utils/const.dart';
 import 'package:e_plaza_delivery_partner/utils/helper.dart';
 import 'package:e_plaza_delivery_partner/values/dimen.dart';
 import 'package:e_plaza_delivery_partner/widgets/widgets.dart';
@@ -9,14 +10,15 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../modals/order.dart';
+import '../../modals/new_order.dart';
 import '../../utils/toasty.dart';
 
 class OrderWidget extends StatelessWidget {
-  final String status;
-  final Order order;
-  final void Function(Order order)? deliver;
-  ExpandableController expandableController = ExpandableController();
+  final int status;
+  final NewOrder order;
+  final void Function(NewOrder order)? deliver;
+  ExpandableController buyerExpandableController = ExpandableController();
+  ExpandableController vendorExpandableController = ExpandableController();
 
   OrderWidget({required this.order, Key? key, required this.status, this.deliver})
       : super(key: key);
@@ -44,14 +46,14 @@ class OrderWidget extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Shipment Id : #ODVMX67975',
+                  'Shipment Id : #OD${order.id}',
                   style: MyTextStyle(fontSize: fontSizeMedium, fontWeight: FontWeight.w600),
                 ),
               ),
               Icon(statusIcon, color: statusColor, size: 12),
               Helper.spaceHorizontal(2),
               Text(
-                status.inCaps,
+                OrderStatus.orderStatus(status),
                 style: MyTextStyle(
                     color: statusColor, fontSize: fontSizeSmall, fontWeight: FontWeight.w600),
               ),
@@ -65,11 +67,13 @@ class OrderWidget extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _tile('Deliver to : <span style="font-weight:500">Manish Kumar</span>'),
-                    _tile('Assigned <b>2</b> Packages From Xyz Shop'),
+                    _tile(
+                        'Deliver to : <span style="font-weight:500">${order.customer!.firstName.nullSafe} ${order.customer!.lastName.nullSafe}</span>'),
+                    _tile(
+                        'Assigned <b>1</b> Packages From ${order.shopDetails!.shopName.nullSafe}'),
                     // _tile('Deliver to \'Ghantaghar dehradun\''),
-                    _tile('Payment : COD ⟨Paid⟩'),
-                    _tile('Delivery Time :<b>18 Nov, 6:30 PM</b>'),
+                    _tile('Payment : ${order.paymentStatus == 0 ? '⟨Unpaid⟩' : '⟨Paid⟩'}'),
+                    _tile('Delivery Time :<b>5 March, 6:30 PM</b>'),
                   ],
                 ),
               ),
@@ -78,7 +82,7 @@ class OrderWidget extends StatelessWidget {
                 children: [
                   TextButton(
                     onPressed: () {
-                      Helper.openUrl('tel:+911234567890',
+                      Helper.openUrl('tel:${order.customer!.mobile.nullSafe}',
                           launchMode: LaunchMode.externalNonBrowserApplication);
                     },
                     style: TextButton.styleFrom(
@@ -93,7 +97,8 @@ class OrderWidget extends StatelessWidget {
                   Helper.spaceVertical(6),
                   TextButton(
                     onPressed: () {
-                      String query = Uri.encodeComponent('Chukkuwala Dehradun, Uttarakhand 248001');
+                      String query = Uri.encodeComponent(
+                          '${order.customer!.userAddress!.houseNo.nullSafe}, ${order.customer!.userAddress!.colony.nullSafe}, ${order.customer!.userAddress!.landmark.nullSafe}, ${order.customer!.userAddress!.city.nullSafe}, ${order.customer!.userAddress!.state.nullSafe}, ${order.customer!.userAddress!.pinCode.nullSafe}');
                       String googleUrl = "https://www.google.com/maps/search/?api=1&query=$query";
                       // googleUrl.openAsUrl;
                       Helper.openUrl(googleUrl, onError: (s) {
@@ -114,42 +119,18 @@ class OrderWidget extends StatelessWidget {
             ],
           ),
           Helper.spaceVertical(8),
-          ExpandablePanel(
-            controller: expandableController,
-            header: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'View More',
-                  style: MyTextStyle(
-                      fontWeight: FontWeight.w600, color: Colors.blue, fontSize: fontSizeLarge),
-                ),
-                Icon(Icons.arrow_drop_down, color: Colors.blue),
-              ],
-            ),
-            collapsed: empty(),
-            theme: ExpandableThemeData(hasIcon: false),
-            expanded: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Html(data: '<span style="font-weight:500">Manish Kumar</span>', style: {"body": Style(margin: Margins.all(2))}),
-                Html(data: '35, Gandhi Rd', style: {"body": Style(margin: Margins.all(2))}),
-                Html(data: 'Dhamawala Mohalla, Paltan Bazaar, Dehradun', style: {"body": Style(margin: Margins.all(2))}),
-                Html(data: 'Dehradun, Uttarakhand - 248001', style: {"body": Style(margin: Margins.all(2))}),
-                Html(data: 'Phone Number: 1234567890,0987654321', style: {"body": Style(margin: Margins.all(2))}),
-                Html(data: 'Note : Beaver of dog! Enter in our area on your own risk!', style: {"body": Style(margin: Margins.all(2))}),
-              ],
-            ),
-          ),
+          buyerAddress,
+          Helper.spaceVertical(8),
+          shopAddress,
           Helper.spaceVertical(8),
           Row(
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                'Price : ₹4000/-',
-                style: MyTextStyle(fontSize: fontSizeLarge, fontWeight: FontWeight.w600),
-              ),
+              // Text(
+              //   'Price : ₹4000/-',
+              //   style: MyTextStyle(fontSize: fontSizeLarge, fontWeight: FontWeight.w600),
+              // ),
               Spacer(),
               ..._buttons(),
             ],
@@ -162,49 +143,49 @@ class OrderWidget extends StatelessWidget {
   List<Widget> _buttons() {
     List<Widget> buttons = <Widget>[];
 
-    if (status == 'NEW') {
-      buttons.add(OutlinedButton(
-        onPressed: () {},
-        style: OutlinedButton.styleFrom(
-          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-          minimumSize: Size.zero,
-        ),
-        child: Text(
-          'Accept',
-          style: MyTextStyle(fontSize: fontSizeSmall),
-        ),
-      ));
-      buttons.add(Helper.spaceHorizontal(6));
-    }
-    if (status == 'NEW') {
-      buttons.add(OutlinedButton(
-        onPressed: () {
-          CancellationReasonDialog(
-            reasons: [
-              'My Mood has changes',
-              'I am busy',
-              'I am resign from my job',
-              'Bhad me jao',
-              'Other'
-            ].toSet(),
-            onSubmit: (String reason) {
-              Get.back();
-              Toasty.info(reason);
-            },
-          );
-        },
-        style: OutlinedButton.styleFrom(
-          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-          minimumSize: Size.zero,
-        ),
-        child: Text(
-          'Reject',
-          style: MyTextStyle(fontSize: fontSizeSmall),
-        ),
-      ));
-      buttons.add(Helper.spaceHorizontal(6));
-    }
-    if (status == 'PENDING') {
+    // if (status == OrderStatus.NEW) {
+    //   buttons.add(OutlinedButton(
+    //     onPressed: () {},
+    //     style: OutlinedButton.styleFrom(
+    //       padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+    //       minimumSize: Size.zero,
+    //     ),
+    //     child: Text(
+    //       'Accept',
+    //       style: MyTextStyle(fontSize: fontSizeSmall),
+    //     ),
+    //   ));
+    //   buttons.add(Helper.spaceHorizontal(6));
+    // }
+    // if (status == OrderStatus.NEW) {
+    //   buttons.add(OutlinedButton(
+    //     onPressed: () {
+    //       CancellationReasonDialog(
+    //         reasons: [
+    //           'My Mood has changes',
+    //           'I am busy',
+    //           'I am resign from my job',
+    //           'Bhad me jao',
+    //           'Other'
+    //         ].toSet(),
+    //         onSubmit: (String reason) {
+    //           Get.back();
+    //           Toasty.info(reason);
+    //         },
+    //       );
+    //     },
+    //     style: OutlinedButton.styleFrom(
+    //       padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+    //       minimumSize: Size.zero,
+    //     ),
+    //     child: Text(
+    //       'Reject',
+    //       style: MyTextStyle(fontSize: fontSizeSmall),
+    //     ),
+    //   ));
+    //   buttons.add(Helper.spaceHorizontal(6));
+    // }
+    // if (status == OrderStatus.PICKED) {
       buttons.add(OutlinedButton(
         onPressed: () {
           deliver?.call(order);
@@ -219,8 +200,8 @@ class OrderWidget extends StatelessWidget {
         ),
       ));
       buttons.add(Helper.spaceHorizontal(6));
-    }
-    if (status == 'DELIVERED') {
+    // }
+    if (status == OrderStatus.DELIVERED) {
       buttons.add(OutlinedButton(
         onPressed: () {},
         style: OutlinedButton.styleFrom(
@@ -266,31 +247,110 @@ class OrderWidget extends StatelessWidget {
     );
   }
 
-  Color get statusColor {
-    switch (status) {
-      case 'DELIVERED':
-        return Colors.green;
-      case 'PENDING':
-        return Colors.amber;
-      case 'CANCELED':
-        return Colors.red;
-    }
+  Widget get buyerAddress => ExpandablePanel(
+        controller: buyerExpandableController,
+        header: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Buyer Details',
+              style: MyTextStyle(
+                  fontWeight: FontWeight.w600, color: Colors.blue, fontSize: fontSizeLarge),
+            ),
+            Icon(Icons.arrow_drop_down, color: Colors.blue),
+          ],
+        ),
+        collapsed: empty(),
+        theme: ExpandableThemeData(hasIcon: false),
+        expanded: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Html(
+                data:
+                    '<span style="font-weight:500">${order.customer!.firstName.nullSafe} ${order.customer!.lastName.nullSafe} </span>',
+                style: {"body": Style(margin: Margins.all(2))}),
+            Html(
+                data: order.customer!.userAddress!.houseNo.nullSafe +
+                    ', ' +
+                    order.customer!.userAddress!.colony.nullSafe,
+                style: {"body": Style(margin: Margins.all(2))}),
+            Html(
+                data: order.customer!.userAddress!.landmark.nullSafe,
+                style: {"body": Style(margin: Margins.all(2))}),
+            Html(
+                data: '${order.customer!.userAddress!.city.nullSafe}, ${order.customer!.userAddress!.state.nullSafe} - ${order.customer!.userAddress!.pinCode.nullSafe}',
+                style: {"body": Style(margin: Margins.all(2))}),
+            Html(
+                data: 'Phone Number: ${order.customer!.userAddress!.phone.nullSafe}, ${order.customer!.userAddress!.alternatePhone.nullSafe}',
+                style: {"body": Style(margin: Margins.all(2))}),
+            Html(
+                data: 'Note : Beaver of dog! Enter in our area on your own risk!',
+                style: {"body": Style(margin: Margins.all(2))}),
+          ],
+        ),
+      );
 
-    return Colors.grey;
-  }
+  Widget get shopAddress => ExpandablePanel(
+        controller: vendorExpandableController,
+        header: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Pickup Address',
+              style: MyTextStyle(
+                  fontWeight: FontWeight.w600, color: Colors.blue, fontSize: fontSizeLarge),
+            ),
+            Icon(Icons.arrow_drop_down, color: Colors.blue),
+          ],
+        ),
+        collapsed: empty(),
+        theme: ExpandableThemeData(hasIcon: false),
+        expanded: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Html(
+                data: '<span style="font-weight:500">${order.shopDetails!.shopName.nullSafe}</span>',
+                style: {"body": Style(margin: Margins.all(2))}),
+            // Html(data: '35, Gandhi Rd', style: {"body": Style(margin: Margins.all(2))}),
+            Html(
+                data: '${order.shopDetails!.address.nullSafe}',
+                style: {"body": Style(margin: Margins.all(2))}),
+            Html(
+                data: '${order.shopDetails!.city.nullSafe}',
+                style: {"body": Style(margin: Margins.all(2))}),
+            Html(
+                data: 'Vendor Contact: 1234567890', style: {"body": Style(margin: Margins.all(2))}),
+          ],
+        ),
+      );
 
   IconData get statusIcon {
     switch (status) {
-      case 'NEW':
+      case OrderStatus.NEW:
         return Icons.new_releases;
-      case 'PENDING':
+      case OrderStatus.PICKED:
         return CupertinoIcons.time;
-      case 'DELIVERED':
+      case OrderStatus.DELIVERED:
         return CupertinoIcons.check_mark_circled_solid;
-      case 'CANCELED':
+      case OrderStatus.USER_CANCELED:
+      case OrderStatus.VENDOR_CANCELED:
         return Icons.error_outline_rounded;
     }
 
     return Icons.access_time_filled;
+  }
+
+  Color get statusColor {
+    switch (status) {
+      case OrderStatus.PICKED:
+        return Colors.amber;
+      case OrderStatus.DELIVERED:
+        return Colors.green;
+      case OrderStatus.USER_CANCELED:
+      case OrderStatus.VENDOR_CANCELED:
+        return Colors.red;
+    }
+
+    return Colors.grey;
   }
 }

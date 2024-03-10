@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:get/get.dart';
 import 'package:e_plaza_delivery_partner/utils/helper.dart';
 import 'package:e_plaza_delivery_partner/values/dimen.dart';
 import 'package:e_plaza_delivery_partner/values/theme_colors.dart';
 import 'package:e_plaza_delivery_partner/widgets/my_network_image.dart';
 import 'package:e_plaza_delivery_partner/widgets/widgets.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:get/get.dart';
 
 class MyAlertDialog {
   bool _cancelable = true;
@@ -35,8 +35,7 @@ class MyAlertDialog {
 
   MyAlertDialog();
 
-  MyAlertDialog setIcon(String _iconImage,
-      {String defaultIcon = 'assets/icons/logo.png'}) {
+  MyAlertDialog setIcon(String _iconImage, {String defaultIcon = 'assets/icons/logo.png'}) {
     this._iconImage = _iconImage;
     _defaultIconImage = defaultIcon;
     return this;
@@ -102,22 +101,19 @@ class MyAlertDialog {
     return this;
   }
 
-  MyAlertDialog setPositiveButton(
-      String text, void Function()? positiveClickListener) {
+  MyAlertDialog setPositiveButton(String text, void Function()? positiveClickListener) {
     _positiveButtonText = text;
     _positiveClickListener = positiveClickListener;
     return this;
   }
 
-  MyAlertDialog setNeutralButton(
-      String text, void Function()? neutralClickListener) {
+  MyAlertDialog setNeutralButton(String text, void Function()? neutralClickListener) {
     _neutralButtonText = text;
     _neutralClickListener = neutralClickListener;
     return this;
   }
 
-  MyAlertDialog setNegativeButton(
-      String text, void Function()? negativeClickListener) {
+  MyAlertDialog setNegativeButton(String text, void Function()? negativeClickListener) {
     _negativeButtonText = text;
     _negativeClickListener = negativeClickListener;
     return this;
@@ -151,11 +147,9 @@ class MyAlertDialog {
   void show() {
     Get.dialog(
         Dialog(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(_cornersRound)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(_cornersRound)),
           child: Container(
-            padding:
-                const EdgeInsets.only(left: 20, right: 20, top: 15, bottom: 15),
+            padding: const EdgeInsets.only(left: 20, right: 20, top: 15, bottom: 15),
             decoration: Helper.dialogBoxDecoration,
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -166,54 +160,52 @@ class MyAlertDialog {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      _iconImage.isNotEmpty || _defaultIconImage.isNotEmpty
-                          ? Container(
-                              margin: const EdgeInsets.only(right: 10),
-                              child: ClipRRect(
-                                borderRadius:
-                                    BorderRadius.circular(_iconSize / 2),
-                                child: MyNetworkImage(
-                                  path: _iconImage,
-                                  width: _iconSize,
-                                  height: _iconSize,
-                                  errorWidget: assetImage(_iconImage,
-                                      width: _iconSize,
-                                      height: _iconSize,
-                                      errorBuilder: (ctx, o, e) => assetImage(
-                                          _defaultIconImage,
-                                          width: _iconSize,
-                                          height: _iconSize)),
-                                ),
-                                // child: Helper.isValidUrl(_iconImage, validExtensions: Helper.validImageExtensions)
-                                //     ? MyNetworkImage(
-                                //         path: _iconImage,
-                                //         width: _iconSize,
-                                //         height: _iconSize,
-                                //         errorWidget: assetImage(_defaultIconImage, width: _iconSize, height: _iconSize),
-                                //       )
-                                //     : assetImage(_defaultIconImage, width: _iconSize, height: _iconSize),
-                              ),
-                            )
-                          : empty(),
+                      // _iconImage.isNotEmpty || _defaultIconImage.isNotEmpty
+                      //     ? Container(
+                      //         margin: const EdgeInsets.only(right: 10),
+                      //         child: ClipRRect(
+                      //           borderRadius: BorderRadius.circular(_iconSize / 2),
+                      //           child: MyNetworkImage(
+                      //             path: _iconImage,
+                      //             width: _iconSize,
+                      //             height: _iconSize,
+                      //             errorWidget: assetImage(
+                      //               _iconImage,
+                      //               width: _iconSize,
+                      //               height: _iconSize,
+                      //               errorBuilder: (ctx, o, e) => assetImage(
+                      //                 _defaultIconImage,
+                      //                 width: _iconSize,
+                      //                 height: _iconSize,
+                      //               ),
+                      //             ),
+                      //           ),
+                      //           // child: Helper.isValidUrl(_iconImage, validExtensions: Helper.validImageExtensions)
+                      //           //     ? MyNetworkImage(
+                      //           //         path: _iconImage,
+                      //           //         width: _iconSize,
+                      //           //         height: _iconSize,
+                      //           //         errorWidget: assetImage(_defaultIconImage, width: _iconSize, height: _iconSize),
+                      //           //       )
+                      //           //     : assetImage(_defaultIconImage, width: _iconSize, height: _iconSize),
+                      //         ),
+                      //       )
+                      //     : empty(),
                       Flexible(
                           child: Text(_title,
-                              style: MyTextStyle(
-                                  color: _titleTextColor,
-                                  fontSize: _titleTextSize))),
+                              style:
+                                  MyTextStyle(color: _titleTextColor, fontSize: _titleTextSize))),
                     ],
                   ),
                 ),
                 Helper.spaceVertical(_firstSpacing),
                 Flexible(
                     child: SingleChildScrollView(
-                        child: Align(
-                            alignment: _messageAlignment,
-                            child: _textWidget()))),
+                        child: Align(alignment: _messageAlignment, child: _textWidget()))),
                 Helper.spaceVertical(_secondSpacing),
                 Align(
                   alignment: _buttonAlignment ?? Alignment.centerRight,
-                  child: Row(
-                      mainAxisSize: MainAxisSize.min, children: _getButtons()),
+                  child: Row(mainAxisSize: MainAxisSize.min, children: _getButtons()),
                 )
               ],
             ),
@@ -240,8 +232,7 @@ class MyAlertDialog {
         elevation: 1,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Text(_negativeButtonText,
-            style:
-                MyTextStyle(color: _buttonsTextColor, fontSize: fontSizeSmall)),
+            style: MyTextStyle(color: _buttonsTextColor, fontSize: fontSizeSmall)),
       ));
     }
 

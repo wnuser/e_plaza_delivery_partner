@@ -1,3 +1,4 @@
+import 'package:e_plaza_delivery_partner/dialogs/popup_menu.dart';
 import 'package:e_plaza_delivery_partner/utils/helper.dart';
 import 'package:e_plaza_delivery_partner/values/size_config.dart';
 import 'package:flutter/material.dart';
@@ -40,9 +41,14 @@ class HomeAppBar extends StatelessWidget {
           // smallIconImage('assets/icons/favorite.png', () {},
           //     iconColor: ThemeColors.colorPrimary, factor: 1.8),
           // Helper.spaceHorizontal(2),
-          // smallIconImage('assets/icons/notification_outline.png', () {
-          //   Get.to(() => NotificationsScreen());
-          // }, iconColor: ThemeColors.colorPrimary, factor: 1.8),
+          MyPopupMenuButton(
+            title: '',
+            list: ['Log Out'],
+            child: Icon(Icons.more_vert_rounded),
+            onSelected: (s) {
+              Helper.logOut();
+            },
+          ),
           Helper.spaceHorizontal(12),
         ],
       ),
