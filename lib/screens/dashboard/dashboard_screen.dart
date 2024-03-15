@@ -6,8 +6,10 @@ import 'package:e_plaza_delivery_partner/values/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../dialogs/deliver_order_dialog.dart';
 import '../../utils/const.dart';
 import '../../utils/helper.dart';
+import '../../utils/toasty.dart';
 import '../../values/dimen.dart';
 import '../../values/theme_colors.dart';
 import '../../widgets/my_network_image.dart';
@@ -161,9 +163,29 @@ class DashboardScreen extends StatelessWidget {
                   Obx(
                     () {
                       _controller.newOrdersList.length;
+
+                      if(_controller.status.value == Status.PROGRESS) {
+                        return progressLayout();
+                      }
+
+                      if(_controller.newOrdersList.isEmpty) {
+                        return emptyLayout(title: 'No Orders!');
+                      }
+
                       return OrderList(
                         orderStatus: OrderStatus.NEW,
                         orders: _controller.newOrdersList,
+                        deliver: (order) {
+                          VerifyOtpDialog(
+                            orderId: order.id,
+                            onDeliver: () {
+                              Get.back();
+                              // _controller.order = order;
+                              Toasty.success('OK OK');
+                              // _controller.sendOtp();
+                            },
+                          );
+                        },
                       );
                     },
                   )

@@ -60,7 +60,7 @@ class Helper {
 
   static const List<String> validImageExtensions = ['png', 'jpg', 'jpeg', 'webp'];
 
-  static void initAutoRefreshTimer({int delayInSeconds = 4}) {
+  static void initAutoRefreshTimer({int delayInSeconds = 5}) {
     // if (Const.isDeveloper) return; //TODO
 
     if (_timer != null) {
@@ -96,7 +96,7 @@ class Helper {
 
   static void removeAutoRefreshCallback(String key) {
     if (fastRefreshCallbacks.containsKey(key)) fastRefreshCallbacks.remove(key);
-    if (fastRefreshCallbacks.containsKey(key)) refreshCallbacks.remove(key);
+    if (refreshCallbacks.containsKey(key)) refreshCallbacks.remove(key);
     Logger.m(tag: 'Removed From Refresh Callback', value: key);
   }
 

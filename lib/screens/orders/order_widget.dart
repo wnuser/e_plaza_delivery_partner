@@ -1,4 +1,3 @@
-import 'package:e_plaza_delivery_partner/dialogs/cancel_reason_dialog.dart';
 import 'package:e_plaza_delivery_partner/utils/const.dart';
 import 'package:e_plaza_delivery_partner/utils/helper.dart';
 import 'package:e_plaza_delivery_partner/values/dimen.dart';
@@ -7,7 +6,6 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../modals/new_order.dart';
@@ -73,7 +71,7 @@ class OrderWidget extends StatelessWidget {
                         'Assigned <b>1</b> Packages From ${order.shopDetails!.shopName.nullSafe}'),
                     // _tile('Deliver to \'Ghantaghar dehradun\''),
                     _tile('Payment : ${order.paymentStatus == 0 ? '⟨Unpaid⟩' : '⟨Paid⟩'}'),
-                    _tile('Delivery Time :<b>5 March, 6:30 PM</b>'),
+                    // _tile('Delivery Time :<b>5 March, 6:30 PM</b>'),
                   ],
                 ),
               ),
@@ -185,7 +183,7 @@ class OrderWidget extends StatelessWidget {
     //   ));
     //   buttons.add(Helper.spaceHorizontal(6));
     // }
-    // if (status == OrderStatus.PICKED) {
+    if (status != OrderStatus.DELIVERED) {
       buttons.add(OutlinedButton(
         onPressed: () {
           deliver?.call(order);
@@ -200,21 +198,21 @@ class OrderWidget extends StatelessWidget {
         ),
       ));
       buttons.add(Helper.spaceHorizontal(6));
-    // }
-    if (status == OrderStatus.DELIVERED) {
-      buttons.add(OutlinedButton(
-        onPressed: () {},
-        style: OutlinedButton.styleFrom(
-          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-          minimumSize: Size.zero,
-        ),
-        child: Text(
-          'Invoice',
-          style: MyTextStyle(fontSize: fontSizeSmall),
-        ),
-      ));
-      buttons.add(Helper.spaceHorizontal(6));
     }
+    // if (status == OrderStatus.DELIVERED) {
+    //   buttons.add(OutlinedButton(
+    //     onPressed: () {},
+    //     style: OutlinedButton.styleFrom(
+    //       padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+    //       minimumSize: Size.zero,
+    //     ),
+    //     child: Text(
+    //       'Invoice',
+    //       style: MyTextStyle(fontSize: fontSizeSmall),
+    //     ),
+    //   ));
+    //   buttons.add(Helper.spaceHorizontal(6));
+    // }
     return buttons;
   }
 
@@ -278,10 +276,12 @@ class OrderWidget extends StatelessWidget {
                 data: order.customer!.userAddress!.landmark.nullSafe,
                 style: {"body": Style(margin: Margins.all(2))}),
             Html(
-                data: '${order.customer!.userAddress!.city.nullSafe}, ${order.customer!.userAddress!.state.nullSafe} - ${order.customer!.userAddress!.pinCode.nullSafe}',
+                data:
+                    '${order.customer!.userAddress!.city.nullSafe}, ${order.customer!.userAddress!.state.nullSafe} - ${order.customer!.userAddress!.pinCode.nullSafe}',
                 style: {"body": Style(margin: Margins.all(2))}),
             Html(
-                data: 'Phone Number: ${order.customer!.userAddress!.phone.nullSafe}, ${order.customer!.userAddress!.alternatePhone.nullSafe}',
+                data:
+                    'Phone Number: ${order.customer!.userAddress!.phone.nullSafe}, ${order.customer!.userAddress!.alternatePhone.nullSafe}',
                 style: {"body": Style(margin: Margins.all(2))}),
             Html(
                 data: 'Note : Beaver of dog! Enter in our area on your own risk!',
@@ -309,7 +309,8 @@ class OrderWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Html(
-                data: '<span style="font-weight:500">${order.shopDetails!.shopName.nullSafe}</span>',
+                data:
+                    '<span style="font-weight:500">${order.shopDetails!.shopName.nullSafe}</span>',
                 style: {"body": Style(margin: Margins.all(2))}),
             // Html(data: '35, Gandhi Rd', style: {"body": Style(margin: Margins.all(2))}),
             Html(

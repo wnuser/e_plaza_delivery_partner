@@ -1,9 +1,9 @@
 import 'package:e_plaza_delivery_partner/modals/new_order.dart';
 import 'package:e_plaza_delivery_partner/utils/const.dart';
+import 'package:e_plaza_delivery_partner/utils/helper.dart';
 import 'package:get/get.dart';
 
 import '../../data_provider/repository.dart';
-import '../../utils/data/test.dart';
 import '../../utils/preference.dart';
 
 class Controller extends GetxController {
@@ -22,7 +22,12 @@ class Controller extends GetxController {
 
   void init() {
     getDashboardStatus();
-    getNewOrders();
+    getNewOrders(first: true);
+
+    Helper.addRefreshCallback('dashboard', () {
+      getDashboardStatus();
+      getNewOrders();
+    });
   }
 
   void getDashboardStatus() async {
@@ -35,20 +40,25 @@ class Controller extends GetxController {
     }
   }
 
-  void getNewOrders() async {
-    status.value = Status.PROGRESS;
+  void getNewOrders({bool first = false}) async {
+    if(first) status.value = Status.PROGRESS;
     var list = await Repository.instance.getOrders(Preference.user.id.toString(), OrderStatus.NEW);
 
     if (list.isNotEmpty) {
       list.forEach((element) {
-        newOrdersList.add(element);
+        newOrdersList.add(NewOrder.fromJson(element));
       });
     }
 
     //TODO: TEMP
-    newOrdersList.addAll(List.generate(12, (index) => dummyOrder));
+    // newOrdersList.addAll(List.generate(12, (index) => dummyOrder));
 
     status.value = Status.NORMAL;
   }
 
+  @override
+  void onClose() {
+    Helper.removeAutoRefreshCallback('dashboard');
+    super.onClose();
+  }
 }

@@ -1,5 +1,6 @@
 // import 'package:firebase_core/firebase_core.dart';
 import 'package:e_plaza_delivery_partner/screens/splash_screen.dart';
+import 'package:e_plaza_delivery_partner/utils/helper.dart';
 import 'package:e_plaza_delivery_partner/values/theme_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -38,6 +39,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
+    Helper.initAutoRefreshTimer();
     super.initState();
   }
 
